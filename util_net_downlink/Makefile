@@ -56,17 +56,23 @@ install:
 ifneq ($(strip $(TARGET_IP)),)
  ifneq ($(strip $(TARGET_DIR)),)
   ifneq ($(strip $(TARGET_USR)),)
-	@echo "---- Copying net_downlink files to $(TARGET_IP):$(TARGET_DIR)"
-	@ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
-	@scp net_downlink $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
+   ifeq ($(TARGET_IP),localhost)
+    @echo "---- Installing net_downlink locally to $(TARGET_DIR)"
+    @mkdir -p $(TARGET_DIR)
+    @cp net_downlink $(TARGET_DIR)
+   else
+    @echo "---- Copying net_downlink files to $(TARGET_IP):$(TARGET_DIR)"
+    @ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
+    @scp net_downlink $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
+   endif
   else
-	@echo "ERROR: TARGET_USR is not configured in target.cfg"
+   @echo "ERROR: TARGET_USR is not configured in target.cfg"
   endif
  else
-	@echo "ERROR: TARGET_DIR is not configured in target.cfg"
+  @echo "ERROR: TARGET_DIR is not configured in target.cfg"
  endif
 else
-	@echo "ERROR: TARGET_IP is not configured in target.cfg"
+ @echo "ERROR: TARGET_IP is not configured in target.cfg"
 endif
 
 $(OBJDIR):
