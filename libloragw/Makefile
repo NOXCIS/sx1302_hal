@@ -22,7 +22,8 @@ LIBS := -lloragw -ltinymt32 -lrt -lm -lcursor
 
 ### general build targets
 
-all: libloragw.a test_loragw_spi test_loragw_i2c test_loragw_reg test_loragw_hal_tx test_loragw_hal_rx test_loragw_cal test_loragw_capture_ram test_loragw_spi_sx1250 test_loragw_counter test_loragw_gps
+.PHONY: all test clean install
+all: libloragw.a
 
 clean:
 	rm -f libloragw.a
@@ -30,16 +31,16 @@ clean:
 	rm -f $(OBJDIR)/*.o
 	rm -f inc/config.h
 
-install: all
+install: libloragw.a
 ifneq ($(strip $(TARGET_IP)),)
  ifneq ($(strip $(TARGET_DIR)),)
   ifneq ($(strip $(TARGET_USR)),)
 ifeq ($(TARGET_IP),localhost)
-	@echo "---- Installing libloragw reset script locally to $(TARGET_DIR)"
+	@echo "---- Installing libloragw files locally to $(TARGET_DIR)"
 	@mkdir -p $(TARGET_DIR)
 	@cp ../tools/reset_lgw.sh $(TARGET_DIR)
 else
-	@echo "---- Copying libloragw reset script to $(TARGET_IP):$(TARGET_DIR)"
+	@echo "---- Copying libloragw files to $(TARGET_IP):$(TARGET_DIR)"
 	@ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
 	@scp ../tools/reset_lgw.sh $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
 endif
@@ -124,5 +125,7 @@ test_loragw_counter: tst/test_loragw_counter.c libloragw.a
 
 test_loragw_gps: tst/test_loragw_gps.c libloragw.a
 	$(CC) $(CFLAGS) -L. -L../libtools  $< -o $@ $(LIBS)
+
+test: test_loragw_spi test_loragw_i2c test_loragw_reg test_loragw_hal_tx test_loragw_hal_rx test_loragw_cal test_loragw_capture_ram test_loragw_spi_sx1250 test_loragw_counter test_loragw_gps
 
 ### EOF
