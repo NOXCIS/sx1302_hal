@@ -30,19 +30,17 @@ clean:
 	rm -f $(OBJDIR)/*.o
 	rm -f inc/config.h
 
-install:
+install: all
 ifneq ($(strip $(TARGET_IP)),)
  ifneq ($(strip $(TARGET_DIR)),)
   ifneq ($(strip $(TARGET_USR)),)
 ifeq ($(TARGET_IP),localhost)
-	@echo "---- Installing libloragw files locally to $(TARGET_DIR)"
+	@echo "---- Installing libloragw reset script locally to $(TARGET_DIR)"
 	@mkdir -p $(TARGET_DIR)
-	@cp test_loragw_* $(TARGET_DIR)
 	@cp ../tools/reset_lgw.sh $(TARGET_DIR)
 else
-	@echo "---- Copying libloragw files to $(TARGET_IP):$(TARGET_DIR)"
+	@echo "---- Copying libloragw reset script to $(TARGET_IP):$(TARGET_DIR)"
 	@ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
-	@scp test_loragw_* $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
 	@scp ../tools/reset_lgw.sh $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
 endif
   else
