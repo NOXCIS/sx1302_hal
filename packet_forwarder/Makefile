@@ -49,42 +49,32 @@ LIBS := -lloragw -ltinymt32 -lparson -lbase64 -lrt -lpthread -lm -lcursor
 all: $(APP_NAME)
 
 clean:
-	rm -f $(OBJDIR)/*.o
-	rm -f $(APP_NAME)
+	@rm -f $(OBJDIR)/*.o
+	@rm -f $(APP_NAME)
 
-ifneq ($(strip $(TARGET_IP)),)
- ifneq ($(strip $(TARGET_DIR)),)
-  ifneq ($(strip $(TARGET_USR)),)
-install:
+# Install rules for packet_forwarder
+install: all
 ifeq ($(TARGET_IP),localhost)
-   @echo "---- Installing packet_forwarder locally to $(TARGET_DIR)"
-   @mkdir -p $(TARGET_DIR)
-   @cp lora_pkt_fwd $(TARGET_DIR)
+	@echo "---- Installing packet_forwarder locally to $(TARGET_DIR)"
+	@mkdir -p $(TARGET_DIR)
+	@cp lora_pkt_fwd $(TARGET_DIR)
 else
-   @echo "---- Copying packet_forwarder files to $(TARGET_IP):$(TARGET_DIR)"
-   @ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
-   @scp lora_pkt_fwd $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
+	@echo "---- Copying packet_forwarder files to $(TARGET_IP):$(TARGET_DIR)"
+	@ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
+	@scp lora_pkt_fwd $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
 endif
-install_conf:
+
+install_conf: install
 ifeq ($(TARGET_IP),localhost)
-   @echo "---- Installing packet_forwarder conf files locally to $(TARGET_DIR)"
-   @mkdir -p $(TARGET_DIR)
-   @cp global_conf.json.sx1250.* $(TARGET_DIR)
-   @cp global_conf.json.sx1257.* $(TARGET_DIR)
+	@echo "---- Installing packet_forwarder conf files locally to $(TARGET_DIR)"
+	@mkdir -p $(TARGET_DIR)
+	@cp global_conf.json.sx1250.* $(TARGET_DIR)
+	@cp global_conf.json.sx1257.* $(TARGET_DIR)
 else
-   @echo "---- Copying packet_forwarder conf files to $(TARGET_IP):$(TARGET_DIR)"
-   @ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
-   @scp global_conf.json.sx1250.* $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
-   @scp global_conf.json.sx1257.* $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
-endif
-  else
-	@echo "ERROR: TARGET_USR is not configured in target.cfg"
-  endif
- else
-	@echo "ERROR: TARGET_DIR is not configured in target.cfg"
- endif
-else
-	@echo "ERROR: TARGET_IP is not configured in target.cfg"
+	@echo "---- Copying packet_forwarder conf files to $(TARGET_IP):$(TARGET_DIR)"
+	@ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
+	@scp global_conf.json.sx1250.* $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
+	@scp global_conf.json.sx1257.* $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
 endif
 
 ### Sub-modules compilation
