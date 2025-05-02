@@ -12,25 +12,25 @@ OBJDIR = obj
 ### ----- AVOID MODIFICATIONS BELLOW ------ AVOID MODIFICATIONS BELLOW ----- ###
 
 ifeq '$(BUILD_MODE)' 'alpha'
-  $(warning /\/\/\/ Building in 'alpha' mode \/\/\/\)
-  WARN_CFLAGS   :=
-  OPT_CFLAGS    := -O0
-  DEBUG_CFLAGS  := -g
-  LDFLAGS       :=
+	$(warning /\/\/\/ Building in 'alpha' mode \/\/\/\)
+	WARN_CFLAGS   :=
+	OPT_CFLAGS    := -O0
+	DEBUG_CFLAGS  := -g
+	LDFLAGS       :=
 else ifeq '$(BUILD_MODE)' 'debug'
-  $(warning /\/\/\/  Building in 'debug' mode \/\/\/\)
-  WARN_CFLAGS   := -Wall -Wextra
-  OPT_CFLAGS    := -O2
-  DEBUG_CFLAGS  := -g
-  LDFLAGS       :=
+	$(warning /\/\/\/  Building in 'debug' mode \/\/\/\)
+	WARN_CFLAGS   := -Wall -Wextra
+	OPT_CFLAGS    := -O2
+	DEBUG_CFLAGS  := -g
+	LDFLAGS       :=
 else ifeq  '$(BUILD_MODE)' 'release'
-  $(warning /\/\/\/  Building in 'release' mode \/\/\/\)
-  WARN_CFLAGS   := -Wall -Wextra
-  OPT_CFLAGS    := -O2 -ffunction-sections -fdata-sections
-  DEBUG_CFLAGS  :=
-  LDFLAGS       := -Wl,--gc-sections
+	$(warning /\/\/\/  Building in 'release' mode \/\/\/\)
+	WARN_CFLAGS   := -Wall -Wextra
+	OPT_CFLAGS    := -O2 -ffunction-sections -fdata-sections
+	DEBUG_CFLAGS  :=
+	LDFLAGS       := -Wl,--gc-sections
 else
-  $(error BUILD_MODE must be set to either 'alpha', 'debug' or 'release')
+	$(error BUILD_MODE must be set to either 'alpha', 'debug' or 'release')
 endif
 
 ### Application-specific variables
@@ -54,25 +54,25 @@ clean:
 
 install:
 ifneq ($(strip $(TARGET_IP)),)
- ifneq ($(strip $(TARGET_DIR)),)
-  ifneq ($(strip $(TARGET_USR)),)
-   ifeq ($(TARGET_IP),localhost)
-    @echo "---- Installing net_downlink locally to $(TARGET_DIR)"
-    @mkdir -p $(TARGET_DIR)
-    @cp net_downlink $(TARGET_DIR)
-   else
-    @echo "---- Copying net_downlink files to $(TARGET_IP):$(TARGET_DIR)"
-    @ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
-    @scp net_downlink $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
-   endif
-  else
-   @echo "ERROR: TARGET_USR is not configured in target.cfg"
-  endif
- else
-  @echo "ERROR: TARGET_DIR is not configured in target.cfg"
- endif
+ifneq ($(strip $(TARGET_DIR)),)
+ifneq ($(strip $(TARGET_USR)),)
+ifeq ($(TARGET_IP),localhost)
+	@echo "---- Installing net_downlink locally to $(TARGET_DIR)"
+	@mkdir -p $(TARGET_DIR)
+	@cp net_downlink $(TARGET_DIR)
 else
- @echo "ERROR: TARGET_IP is not configured in target.cfg"
+	@echo "---- Copying net_downlink files to $(TARGET_IP):$(TARGET_DIR)"
+	@ssh $(TARGET_USR)@$(TARGET_IP) "mkdir -p $(TARGET_DIR)"
+	@scp net_downlink $(TARGET_USR)@$(TARGET_IP):$(TARGET_DIR)
+endif
+else
+	@echo "ERROR: TARGET_USR is not configured in target.cfg"
+endif
+else
+	@echo "ERROR: TARGET_DIR is not configured in target.cfg"
+endif
+else
+	@echo "ERROR: TARGET_IP is not configured in target.cfg"
 endif
 
 $(OBJDIR):
